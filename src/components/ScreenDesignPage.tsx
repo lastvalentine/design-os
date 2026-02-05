@@ -1,6 +1,6 @@
-import { Suspense, useMemo, useState, useRef, useCallback, useEffect } from 'react'
+import { Suspense, useMemo, useState, useRef, useCallback, useEffect, createElement } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Maximize2, GripVertical, Layout, Smartphone, Tablet, Monitor } from 'lucide-react'
+import { ArrowLeft, Maximize2, GripVertical, Layout, Smartphone, Tablet, Monitor, LayoutDashboard, ScrollText, AlertTriangle, Play, Settings, Users, FileText, Home, List, Inbox, type LucideIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { loadScreenDesignComponent, sectionUsesShell } from '@/lib/section-loader'
@@ -253,6 +253,29 @@ export function ScreenDesignFullscreen() {
           const shellInfo = loadShellInfo()
           const specNavItems = shellInfo?.spec?.navigationItems || []
 
+          // Icon mapping for common navigation labels
+          const iconMap: Record<string, LucideIcon> = {
+            'overview': LayoutDashboard,
+            'dashboard': LayoutDashboard,
+            'home': Home,
+            'sync logs': ScrollText,
+            'logs': ScrollText,
+            'errors': AlertTriangle,
+            'actions': Play,
+            'settings': Settings,
+            'users': Users,
+            'documents': FileText,
+            'files': FileText,
+            'items': List,
+            'inbox': Inbox,
+          }
+
+          const getIconForLabel = (label: string): React.ReactNode => {
+            const normalizedLabel = label.toLowerCase()
+            const IconComponent = iconMap[normalizedLabel] || List
+            return createElement(IconComponent, { className: 'w-5 h-5' })
+          }
+
           // Parse navigation items from spec (format: "**Label** → Description")
           const navigationItems = specNavItems.length > 0
             ? specNavItems.map((item, index) => {
@@ -263,12 +286,13 @@ export function ScreenDesignFullscreen() {
                   label,
                   href: `/${label.toLowerCase().replace(/\s+/g, '-')}`,
                   isActive: index === 0,
+                  icon: getIconForLabel(label),
                 }
               })
             : [
-                { label: 'Dashboard', href: '/', isActive: true },
-                { label: 'Items', href: '/items' },
-                { label: 'Settings', href: '/settings' },
+                { label: 'Dashboard', href: '/', isActive: true, icon: createElement(LayoutDashboard, { className: 'w-5 h-5' }) },
+                { label: 'Items', href: '/items', icon: createElement(List, { className: 'w-5 h-5' }) },
+                { label: 'Settings', href: '/settings', icon: createElement(Settings, { className: 'w-5 h-5' }) },
               ]
 
           const defaultUser = {

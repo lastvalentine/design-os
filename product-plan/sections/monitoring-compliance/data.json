@@ -1,0 +1,654 @@
+{
+  "_meta": {
+    "models": {
+      "serviceHealth": "Current operational status of each sync service, showing whether it's healthy, has warnings, or is experiencing errors.",
+      "syncMetrics": "Aggregated statistics for the dashboard overview, including total records synced, average latency, and error rates.",
+      "syncLogs": "Individual sync operation records showing what was synced, when, and whether it succeeded or failed.",
+      "syncErrors": "Errors that need attention, with details about what went wrong and tools to resolve them.",
+      "unlinkedDeepCuraNotes": "Deep Cura AI-extracted notes that couldn't be automatically matched to a clinical note and need manual review.",
+      "alertRules": "Monitoring rules configured in GCP that trigger notifications when something goes wrong.",
+      "alertEvents": "History of alerts that have been triggered, showing when issues occurred and how they were resolved.",
+      "syncActions": "Manual actions available to trigger syncs or reconciliation.",
+      "runningSyncOperations": "Sync operations currently in progress.",
+      "staffRoles": "Team members with access to the dashboard and their permission levels."
+    },
+    "relationships": [
+      "SyncLogs record the history of operations for each service in ServiceHealth",
+      "SyncErrors are generated when SyncLogs have failed status",
+      "UnlinkedDeepCuraNotes reference DeepCuraNote records that need manual linking to ClinicalNotes",
+      "AlertEvents are triggered by AlertRules when thresholds are exceeded",
+      "StaffRoles determine which actions each user can take on errors and sync operations"
+    ]
+  },
+  "serviceHealth": [
+    {
+      "id": "svc-drchrono",
+      "name": "DrChrono Sync",
+      "status": "healthy",
+      "lastSyncAt": "2026-02-04T14:32:18Z",
+      "lastSyncDurationMs": 4521,
+      "recordsSyncedLast24h": 847,
+      "errorCountLast24h": 0,
+      "webhooksReceivedLast24h": 23
+    },
+    {
+      "id": "svc-deepcura",
+      "name": "Deep Cura",
+      "status": "warning",
+      "lastSyncAt": "2026-02-04T14:28:45Z",
+      "lastSyncDurationMs": 892,
+      "recordsSyncedLast24h": 12,
+      "errorCountLast24h": 2,
+      "webhooksReceivedLast24h": 14,
+      "warningMessage": "2 notes failed to link automatically"
+    },
+    {
+      "id": "svc-coda",
+      "name": "Coda Push",
+      "status": "healthy",
+      "lastSyncAt": "2026-02-04T14:32:19Z",
+      "lastSyncDurationMs": 1203,
+      "recordsSyncedLast24h": 892,
+      "errorCountLast24h": 0,
+      "webhooksReceivedLast24h": null
+    }
+  ],
+  "syncMetrics": {
+    "totalRecordsInDb": {
+      "patients": 423,
+      "appointments": 2847,
+      "clinicalNotes": 2651,
+      "deepCuraNotes": 1892,
+      "medications": 1567,
+      "problems": 892,
+      "allergies": 234,
+      "insuranceRecords": 445
+    },
+    "last24Hours": {
+      "totalSyncs": 156,
+      "successfulSyncs": 152,
+      "failedSyncs": 4,
+      "averageLatencyMs": 3420,
+      "recordsCreated": 34,
+      "recordsUpdated": 813,
+      "webhooksReceived": 37,
+      "codaPushes": 892
+    },
+    "last7Days": {
+      "syncsByDay": [
+        { "date": "2026-01-29", "successful": 142, "failed": 2 },
+        { "date": "2026-01-30", "successful": 148, "failed": 1 },
+        { "date": "2026-01-31", "successful": 151, "failed": 3 },
+        { "date": "2026-02-01", "successful": 145, "failed": 0 },
+        { "date": "2026-02-02", "successful": 139, "failed": 2 },
+        { "date": "2026-02-03", "successful": 155, "failed": 1 },
+        { "date": "2026-02-04", "successful": 152, "failed": 4 }
+      ],
+      "errorsByType": [
+        { "type": "rate_limit", "count": 5 },
+        { "type": "timeout", "count": 4 },
+        { "type": "linking_failed", "count": 3 },
+        { "type": "auth_expired", "count": 1 }
+      ]
+    }
+  },
+  "syncLogs": [
+    {
+      "id": "sync-a1b2c3d4",
+      "source": "drchrono",
+      "operation": "webhook",
+      "tableName": "appointments",
+      "status": "completed",
+      "recordsTotal": 1,
+      "recordsCreated": 0,
+      "recordsUpdated": 1,
+      "recordsFailed": 0,
+      "startedAt": "2026-02-04T14:32:15Z",
+      "completedAt": "2026-02-04T14:32:18Z",
+      "durationMs": 3021,
+      "triggeredBy": "webhook",
+      "drchronoId": 329847621
+    },
+    {
+      "id": "sync-e5f6g7h8",
+      "source": "drchrono",
+      "operation": "full_sync",
+      "tableName": "patients",
+      "status": "completed",
+      "recordsTotal": 423,
+      "recordsCreated": 2,
+      "recordsUpdated": 15,
+      "recordsFailed": 0,
+      "startedAt": "2026-02-04T14:15:00Z",
+      "completedAt": "2026-02-04T14:15:47Z",
+      "durationMs": 47230,
+      "triggeredBy": "scheduler"
+    },
+    {
+      "id": "sync-i9j0k1l2",
+      "source": "deepcura",
+      "operation": "gridhook",
+      "tableName": "deepcura_notes",
+      "status": "completed",
+      "recordsTotal": 1,
+      "recordsCreated": 1,
+      "recordsUpdated": 0,
+      "recordsFailed": 0,
+      "startedAt": "2026-02-04T14:28:42Z",
+      "completedAt": "2026-02-04T14:28:45Z",
+      "durationMs": 2891,
+      "triggeredBy": "webhook",
+      "linkedToClinicalNote": true,
+      "clinicalNoteId": "cn-8a7b6c5d"
+    },
+    {
+      "id": "sync-m3n4o5p6",
+      "source": "deepcura",
+      "operation": "gridhook",
+      "tableName": "deepcura_notes",
+      "status": "partial",
+      "recordsTotal": 1,
+      "recordsCreated": 1,
+      "recordsUpdated": 0,
+      "recordsFailed": 0,
+      "startedAt": "2026-02-04T13:45:12Z",
+      "completedAt": "2026-02-04T13:45:14Z",
+      "durationMs": 1892,
+      "triggeredBy": "webhook",
+      "linkedToClinicalNote": false,
+      "warningMessage": "Could not link to clinical note - no matching appointment found"
+    },
+    {
+      "id": "sync-q7r8s9t0",
+      "source": "coda",
+      "operation": "push",
+      "tableName": "appointments",
+      "status": "completed",
+      "recordsTotal": 52,
+      "recordsCreated": 0,
+      "recordsUpdated": 52,
+      "recordsFailed": 0,
+      "startedAt": "2026-02-04T14:32:18Z",
+      "completedAt": "2026-02-04T14:32:19Z",
+      "durationMs": 1203,
+      "triggeredBy": "pubsub"
+    },
+    {
+      "id": "sync-u1v2w3x4",
+      "source": "drchrono",
+      "operation": "webhook",
+      "tableName": "clinical_notes",
+      "status": "failed",
+      "recordsTotal": 1,
+      "recordsCreated": 0,
+      "recordsUpdated": 0,
+      "recordsFailed": 1,
+      "startedAt": "2026-02-04T12:15:33Z",
+      "completedAt": "2026-02-04T12:15:35Z",
+      "durationMs": 2104,
+      "triggeredBy": "webhook",
+      "drchronoId": 329841892,
+      "errorMessage": "Rate limit exceeded (429)",
+      "errorCode": "RATE_LIMIT_EXCEEDED"
+    },
+    {
+      "id": "sync-y5z6a7b8",
+      "source": "drchrono",
+      "operation": "full_sync",
+      "tableName": "medications",
+      "status": "completed",
+      "recordsTotal": 1567,
+      "recordsCreated": 8,
+      "recordsUpdated": 42,
+      "recordsFailed": 0,
+      "startedAt": "2026-02-04T14:16:00Z",
+      "completedAt": "2026-02-04T14:17:23Z",
+      "durationMs": 83420,
+      "triggeredBy": "scheduler"
+    },
+    {
+      "id": "sync-c9d0e1f2",
+      "source": "coda",
+      "operation": "push",
+      "tableName": "patients",
+      "status": "failed",
+      "recordsTotal": 15,
+      "recordsCreated": 0,
+      "recordsUpdated": 12,
+      "recordsFailed": 3,
+      "startedAt": "2026-02-04T11:45:22Z",
+      "completedAt": "2026-02-04T11:45:28Z",
+      "durationMs": 5892,
+      "triggeredBy": "pubsub",
+      "errorMessage": "Coda API rate limit (429) - 3 records not pushed",
+      "errorCode": "CODA_RATE_LIMIT"
+    },
+    {
+      "id": "sync-g3h4i5j6",
+      "source": "drchrono",
+      "operation": "webhook",
+      "tableName": "patients",
+      "status": "completed",
+      "recordsTotal": 1,
+      "recordsCreated": 1,
+      "recordsUpdated": 0,
+      "recordsFailed": 0,
+      "startedAt": "2026-02-04T10:22:15Z",
+      "completedAt": "2026-02-04T10:22:18Z",
+      "durationMs": 2891,
+      "triggeredBy": "webhook",
+      "drchronoId": 329851234
+    },
+    {
+      "id": "sync-k7l8m9n0",
+      "source": "deepcura",
+      "operation": "gridhook",
+      "tableName": "deepcura_notes",
+      "status": "failed",
+      "recordsTotal": 1,
+      "recordsCreated": 0,
+      "recordsUpdated": 0,
+      "recordsFailed": 1,
+      "startedAt": "2026-02-04T09:15:42Z",
+      "completedAt": "2026-02-04T09:15:43Z",
+      "durationMs": 1204,
+      "triggeredBy": "webhook",
+      "errorMessage": "AES decryption failed - invalid payload format",
+      "errorCode": "DECRYPTION_FAILED"
+    },
+    {
+      "id": "sync-o1p2q3r4",
+      "source": "drchrono",
+      "operation": "full_sync",
+      "tableName": "appointments",
+      "status": "completed",
+      "recordsTotal": 2847,
+      "recordsCreated": 0,
+      "recordsUpdated": 67,
+      "recordsFailed": 0,
+      "startedAt": "2026-02-04T14:00:00Z",
+      "completedAt": "2026-02-04T14:02:34Z",
+      "durationMs": 154230,
+      "triggeredBy": "scheduler"
+    },
+    {
+      "id": "sync-s5t6u7v8",
+      "source": "drchrono",
+      "operation": "webhook",
+      "tableName": "appointments",
+      "status": "completed",
+      "recordsTotal": 1,
+      "recordsCreated": 0,
+      "recordsUpdated": 1,
+      "recordsFailed": 0,
+      "startedAt": "2026-02-04T13:58:22Z",
+      "completedAt": "2026-02-04T13:58:24Z",
+      "durationMs": 1892,
+      "triggeredBy": "webhook",
+      "drchronoId": 329847589
+    }
+  ],
+  "syncErrors": [
+    {
+      "id": "err-001",
+      "syncLogId": "sync-u1v2w3x4",
+      "source": "drchrono",
+      "severity": "high",
+      "type": "rate_limit",
+      "tableName": "clinical_notes",
+      "message": "Rate limit exceeded (429) while fetching clinical note",
+      "errorCode": "RATE_LIMIT_EXCEEDED",
+      "affectedRecordId": "329841892",
+      "affectedRecordType": "drchrono_id",
+      "stackTrace": "Error: Rate limit exceeded (429)\n    at DrChronoClient.fetch (/app/src/drchrono/client.ts:142:11)\n    at async syncClinicalNote (/app/src/sync/clinical-notes.ts:87:22)\n    at async handleWebhook (/app/src/webhooks.ts:45:5)",
+      "occurredAt": "2026-02-04T12:15:35Z",
+      "status": "open",
+      "acknowledgedAt": null,
+      "acknowledgedBy": null,
+      "assignedTo": null,
+      "notes": [],
+      "retryCount": 0,
+      "lastRetryAt": null,
+      "runbookUrl": "docs/runbooks/drchrono-sync.md#rate-limits"
+    },
+    {
+      "id": "err-002",
+      "syncLogId": "sync-c9d0e1f2",
+      "source": "coda",
+      "severity": "medium",
+      "type": "rate_limit",
+      "tableName": "patients",
+      "message": "Coda API rate limit - 3 patient records not pushed",
+      "errorCode": "CODA_RATE_LIMIT",
+      "affectedRecordId": null,
+      "affectedRecordType": null,
+      "stackTrace": "Error: Coda API returned 429 Too Many Requests\n    at CodaClient.upsertRows (/app/src/coda/client.ts:98:11)\n    at async pushPatients (/app/src/coda-push/patients.ts:52:18)",
+      "occurredAt": "2026-02-04T11:45:28Z",
+      "status": "acknowledged",
+      "acknowledgedAt": "2026-02-04T11:52:00Z",
+      "acknowledgedBy": "bobby@feelaugust.com",
+      "assignedTo": null,
+      "notes": [
+        {
+          "id": "note-001",
+          "author": "bobby@feelaugust.com",
+          "content": "Will retry in next scheduled sync. Monitoring for recurrence.",
+          "createdAt": "2026-02-04T11:52:30Z"
+        }
+      ],
+      "retryCount": 1,
+      "lastRetryAt": "2026-02-04T12:00:00Z",
+      "runbookUrl": "docs/runbooks/coda-push.md#rate-limits"
+    },
+    {
+      "id": "err-003",
+      "syncLogId": "sync-k7l8m9n0",
+      "source": "deepcura",
+      "severity": "high",
+      "type": "decryption_failed",
+      "tableName": "deepcura_notes",
+      "message": "AES decryption failed - invalid payload format from Deep Cura",
+      "errorCode": "DECRYPTION_FAILED",
+      "affectedRecordId": null,
+      "affectedRecordType": null,
+      "stackTrace": "Error: AES decryption failed: Invalid IV length\n    at decrypt (/app/src/deepcura/decrypt.ts:34:11)\n    at async handleGridhook (/app/src/deepcura-webhook.ts:28:18)",
+      "occurredAt": "2026-02-04T09:15:43Z",
+      "status": "open",
+      "acknowledgedAt": null,
+      "acknowledgedBy": null,
+      "assignedTo": "bobby@feelaugust.com",
+      "notes": [],
+      "retryCount": 0,
+      "lastRetryAt": null,
+      "runbookUrl": "docs/runbooks/deepcura.md#decryption-errors"
+    },
+    {
+      "id": "err-004",
+      "syncLogId": null,
+      "source": "drchrono",
+      "severity": "critical",
+      "type": "auth_expired",
+      "tableName": null,
+      "message": "DrChrono OAuth token refresh failed - manual re-authorization required",
+      "errorCode": "OAUTH_REFRESH_FAILED",
+      "affectedRecordId": null,
+      "affectedRecordType": null,
+      "stackTrace": "Error: OAuth refresh token invalid or expired\n    at DrChronoAuth.refresh (/app/src/drchrono/oauth.ts:67:11)\n    at async ensureValidToken (/app/src/drchrono/client.ts:42:5)",
+      "occurredAt": "2026-02-03T22:15:00Z",
+      "status": "resolved",
+      "acknowledgedAt": "2026-02-03T22:18:00Z",
+      "acknowledgedBy": "bobby@feelaugust.com",
+      "assignedTo": "bobby@feelaugust.com",
+      "resolvedAt": "2026-02-03T22:45:00Z",
+      "resolvedBy": "bobby@feelaugust.com",
+      "notes": [
+        {
+          "id": "note-002",
+          "author": "bobby@feelaugust.com",
+          "content": "Re-authorized via DrChrono admin console. New tokens stored in Secret Manager.",
+          "createdAt": "2026-02-03T22:45:30Z"
+        }
+      ],
+      "retryCount": 0,
+      "lastRetryAt": null,
+      "runbookUrl": "docs/runbooks/drchrono-sync.md#oauth-token-expired"
+    },
+    {
+      "id": "err-005",
+      "syncLogId": "sync-m3n4o5p6",
+      "source": "deepcura",
+      "severity": "low",
+      "type": "linking_failed",
+      "tableName": "deepcura_notes",
+      "message": "Deep Cura note created but could not be linked to clinical note",
+      "errorCode": "LINKING_FAILED",
+      "affectedRecordId": "dc-note-892",
+      "affectedRecordType": "deepcura_note_id",
+      "stackTrace": null,
+      "occurredAt": "2026-02-04T13:45:14Z",
+      "status": "open",
+      "acknowledgedAt": null,
+      "acknowledgedBy": null,
+      "assignedTo": null,
+      "notes": [],
+      "retryCount": 0,
+      "lastRetryAt": null,
+      "runbookUrl": "docs/runbooks/deepcura.md#linking-failures"
+    }
+  ],
+  "unlinkedDeepCuraNotes": [
+    {
+      "id": "dc-note-892",
+      "sessionDate": "2026-02-04",
+      "patientName": "Sarah Mitchell",
+      "patientDrchronoId": 329845123,
+      "providerName": "Dr. James Chen",
+      "soapSubjective": "Patient reports improved sleep over the past week, averaging 7 hours per night. Anxiety symptoms have decreased since starting sertraline 50mg. Denies any side effects.",
+      "icd10Codes": [
+        { "code": "F41.1", "description": "Generalized anxiety disorder" },
+        { "code": "F51.01", "description": "Primary insomnia" }
+      ],
+      "cptCodes": [
+        { "code": "99214", "description": "Office visit, established patient, moderate complexity" }
+      ],
+      "receivedAt": "2026-02-04T13:45:12Z",
+      "status": "pending_review",
+      "suggestedClinicalNotes": [
+        {
+          "id": "cn-suggestion-1",
+          "drchronoId": 892451,
+          "appointmentDate": "2026-02-04",
+          "appointmentTime": "13:30",
+          "matchConfidence": 0.85,
+          "matchReason": "Same patient, same date, time within 30 minutes"
+        }
+      ],
+      "reviewNotes": null
+    },
+    {
+      "id": "dc-note-891",
+      "sessionDate": "2026-02-04",
+      "patientName": "Michael Torres",
+      "patientDrchronoId": 329842891,
+      "providerName": "Dr. Emily Park",
+      "soapSubjective": "Follow-up for ADHD management. Patient reports medication is helping with focus at work but experiencing some appetite suppression. Taking Adderall XR 20mg daily.",
+      "icd10Codes": [
+        { "code": "F90.0", "description": "ADHD, predominantly inattentive type" }
+      ],
+      "cptCodes": [
+        { "code": "99213", "description": "Office visit, established patient, low complexity" }
+      ],
+      "receivedAt": "2026-02-04T11:22:45Z",
+      "status": "pending_review",
+      "suggestedClinicalNotes": [],
+      "reviewNotes": null
+    },
+    {
+      "id": "dc-note-889",
+      "sessionDate": "2026-02-03",
+      "patientName": "Jennifer Walsh",
+      "patientDrchronoId": 329841567,
+      "providerName": "Dr. James Chen",
+      "soapSubjective": "Initial psychiatric evaluation. Patient presents with symptoms of depression lasting 6+ months. Reports low mood, anhedonia, fatigue, and difficulty concentrating. PHQ-9 score of 14 (moderate).",
+      "icd10Codes": [
+        { "code": "F32.1", "description": "Major depressive disorder, single episode, moderate" }
+      ],
+      "cptCodes": [
+        { "code": "99205", "description": "Office visit, new patient, high complexity" }
+      ],
+      "receivedAt": "2026-02-03T16:45:00Z",
+      "status": "pending_review",
+      "suggestedClinicalNotes": [
+        {
+          "id": "cn-suggestion-2",
+          "drchronoId": 892389,
+          "appointmentDate": "2026-02-03",
+          "appointmentTime": "16:00",
+          "matchConfidence": 0.92,
+          "matchReason": "Same patient, same date, exact time match"
+        }
+      ],
+      "reviewNotes": null
+    }
+  ],
+  "alertRules": [
+    {
+      "id": "alert-rule-001",
+      "name": "Sync Failure Rate",
+      "description": "Alert when sync failure rate exceeds 5% in a 15-minute window",
+      "condition": "failure_rate > 0.05",
+      "threshold": "5%",
+      "window": "15 minutes",
+      "severity": "critical",
+      "enabled": true,
+      "notificationChannels": ["email", "slack"],
+      "gcpConsoleUrl": "https://console.cloud.google.com/monitoring/alerting/policies/12345"
+    },
+    {
+      "id": "alert-rule-002",
+      "name": "No Successful Sync",
+      "description": "Alert when no successful sync has occurred in 30 minutes",
+      "condition": "time_since_last_success > 30m",
+      "threshold": "30 minutes",
+      "window": null,
+      "severity": "high",
+      "enabled": true,
+      "notificationChannels": ["email"],
+      "gcpConsoleUrl": "https://console.cloud.google.com/monitoring/alerting/policies/12346"
+    },
+    {
+      "id": "alert-rule-003",
+      "name": "DrChrono API Errors",
+      "description": "Alert on DrChrono API 401 (auth) or 429 (rate limit) errors",
+      "condition": "drchrono_error_code in [401, 429]",
+      "threshold": "1 occurrence",
+      "window": "5 minutes",
+      "severity": "high",
+      "enabled": true,
+      "notificationChannels": ["email", "slack"],
+      "gcpConsoleUrl": "https://console.cloud.google.com/monitoring/alerting/policies/12347"
+    },
+    {
+      "id": "alert-rule-004",
+      "name": "Database Storage Warning",
+      "description": "Alert when Cloud SQL storage usage exceeds 80%",
+      "condition": "storage_used_percent > 80",
+      "threshold": "80%",
+      "window": null,
+      "severity": "medium",
+      "enabled": true,
+      "notificationChannels": ["email"],
+      "gcpConsoleUrl": "https://console.cloud.google.com/monitoring/alerting/policies/12348"
+    }
+  ],
+  "alertEvents": [
+    {
+      "id": "alert-evt-001",
+      "ruleId": "alert-rule-003",
+      "ruleName": "DrChrono API Errors",
+      "severity": "high",
+      "status": "resolved",
+      "triggeredAt": "2026-02-04T12:15:36Z",
+      "acknowledgedAt": "2026-02-04T12:18:00Z",
+      "resolvedAt": "2026-02-04T12:30:00Z",
+      "summary": "DrChrono API returned 429 (rate limit exceeded)",
+      "details": "Rate limit exceeded during clinical_notes webhook processing. Affected record: 329841892"
+    },
+    {
+      "id": "alert-evt-002",
+      "ruleId": "alert-rule-003",
+      "ruleName": "DrChrono API Errors",
+      "severity": "high",
+      "status": "resolved",
+      "triggeredAt": "2026-02-03T22:15:01Z",
+      "acknowledgedAt": "2026-02-03T22:18:00Z",
+      "resolvedAt": "2026-02-03T22:45:00Z",
+      "summary": "DrChrono OAuth token refresh failed (401)",
+      "details": "OAuth refresh token expired. Manual re-authorization completed."
+    },
+    {
+      "id": "alert-evt-003",
+      "ruleId": "alert-rule-002",
+      "ruleName": "No Successful Sync",
+      "severity": "high",
+      "status": "resolved",
+      "triggeredAt": "2026-02-01T03:45:00Z",
+      "acknowledgedAt": "2026-02-01T07:30:00Z",
+      "resolvedAt": "2026-02-01T07:45:00Z",
+      "summary": "No successful sync in 30+ minutes",
+      "details": "Cloud Scheduler job failed to trigger overnight. Manual reconciliation resolved the backlog."
+    }
+  ],
+  "syncActions": [
+    {
+      "id": "action-full-sync",
+      "name": "Full Reconciliation",
+      "description": "Sync all tables from DrChrono and push to Coda",
+      "endpoint": "/sync/all",
+      "method": "POST",
+      "requiredRole": "admin",
+      "estimatedDuration": "3-5 minutes",
+      "confirmationMessage": "This will trigger a full sync of all tables. Are you sure?"
+    },
+    {
+      "id": "action-sync-patients",
+      "name": "Sync Patients",
+      "description": "Sync patient records from DrChrono",
+      "endpoint": "/sync/patients",
+      "method": "POST",
+      "requiredRole": "operator",
+      "estimatedDuration": "30-60 seconds",
+      "confirmationMessage": "Sync all patient records from DrChrono?"
+    },
+    {
+      "id": "action-sync-appointments",
+      "name": "Sync Appointments",
+      "description": "Sync appointment records from DrChrono",
+      "endpoint": "/sync/appointments",
+      "method": "POST",
+      "requiredRole": "operator",
+      "estimatedDuration": "1-2 minutes",
+      "confirmationMessage": "Sync all appointment records from DrChrono?"
+    },
+    {
+      "id": "action-sync-clinical-notes",
+      "name": "Sync Clinical Notes",
+      "description": "Sync clinical notes from DrChrono",
+      "endpoint": "/sync/clinical-notes",
+      "method": "POST",
+      "requiredRole": "operator",
+      "estimatedDuration": "2-3 minutes",
+      "confirmationMessage": "Sync all clinical notes from DrChrono?"
+    },
+    {
+      "id": "action-sync-medications",
+      "name": "Sync Medications",
+      "description": "Sync medication records from DrChrono",
+      "endpoint": "/sync/medications",
+      "method": "POST",
+      "requiredRole": "operator",
+      "estimatedDuration": "1-2 minutes",
+      "confirmationMessage": "Sync all medication records from DrChrono?"
+    }
+  ],
+  "runningSyncOperations": [],
+  "staffRoles": [
+    {
+      "email": "bobby@feelaugust.com",
+      "name": "Bobby Chen",
+      "role": "admin",
+      "createdAt": "2026-01-15T00:00:00Z"
+    },
+    {
+      "email": "coowner@feelaugust.com",
+      "name": "Alex Morgan",
+      "role": "admin",
+      "createdAt": "2026-01-15T00:00:00Z"
+    }
+  ],
+  "currentUser": {
+    "email": "bobby@feelaugust.com",
+    "name": "Bobby Chen",
+    "role": "admin"
+  }
+}
